@@ -1,24 +1,28 @@
 import React from "react";
-import api from "../api";
 
-export default function Rewards() {
-  const logActivity = async (type) => {
-    try {
-      const res = await api.post("/activity", { type });
-      alert(`${res.data.message} (+${res.data.pointsEarned} points)`);
-      // optionally refresh page or update UI by reloading dashboard page
-    } catch (err) {
-      alert(err.response?.data?.error || "Error logging activity");
-    }
-  };
+function Rewards() {
+  const rewards = [
+    { id: 1, title: "Tree Planting Badge 🌳", desc: "Awarded for planting 10 trees" },
+    { id: 2, title: "Clean Energy Champion ⚡", desc: "For using renewable energy" },
+    { id: 3, title: "Plastic-Free Hero ♻️", desc: "Avoided 100 plastic items" },
+  ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="bg-white p-6 rounded-2xl shadow-md w-80 text-center">
-        <h2 className="text-2xl font-bold mb-6">Rewards</h2>
-        <button onClick={() => logActivity("recycle")} className="w-full bg-green-600 text-white py-2 mb-3 rounded-lg hover:bg-green-700">♻️ Recycle (+10)</button>
-        <button onClick={() => logActivity("transport")} className="w-full bg-yellow-500 text-white py-2 rounded-lg hover:bg-yellow-600">🚲 Transport (+5)</button>
+    <div className="p-8">
+      <h2 className="text-3xl font-bold mb-6 text-gray-800">Your Rewards 🏆</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {rewards.map((reward) => (
+          <div
+            key={reward.id}
+            className="bg-white p-6 rounded-2xl shadow hover:shadow-lg transition"
+          >
+            <h3 className="text-xl font-semibold mb-2">{reward.title}</h3>
+            <p className="text-gray-600">{reward.desc}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
 }
+
+export default Rewards;

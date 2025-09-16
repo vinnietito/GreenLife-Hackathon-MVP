@@ -1,33 +1,73 @@
 import React, { useState } from "react";
-import api from "../api";
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
 
-export default function Register() {
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+function Register() {
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
 
-  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+    setSuccess("");
     try {
-      await api.post("/register", form);
-      alert("✅ Registered successfully — please login");
-      navigate("/login");
+      const res = await axios.post("http://localhost:5000/api/register", formData);
+      if (res.data.message) {
+        setSuccess("Registration successful! Please login.");
+        setTimeout(() => navigate("/login"), 1500);
+      } else {
+        setError("Registration failed.");
+      }
     } catch (err) {
-      alert(err.response?.data?.error || "Registration failed");
+      setError("Registration failed. Please try again.");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
-      <form onSubmit={handleSubmit} className="bg-white p-6 rounded-2xl shadow-md w-80">
-        <h2 className="text-xl font-bold mb-4 text-center">Register</h2>
-        <input name="name" placeholder="Name" onChange={handleChange} className="w-full mb-3 p-2 border rounded-lg" />
-        <input name="email" placeholder="Email" onChange={handleChange} className="w-full mb-3 p-2 border rounded-lg" />
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} className="w-full mb-3 p-2 border rounded-lg" />
-        <button type="submit" className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">Register</button>
-      </form>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <h1 className="text-3xl font-bold text-green-700 mb-6 text-center">Register</h1>
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        {success && <p className="text-green-600 text-center mb-4">{success}</p>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+          <button
+            type="submit"
+            className="w-full bg-green-700 text-white py-2 rounded-lg hover:bg-green-800 transition"
+          >
+            Register
+          </button>
+        </form>
+        <p className="mt-4 text-sm text-center text-gray-600">
+          Already have an account?{" "}
+          <Link to="/login" className="text-green-600 hover:underline">
+            Login
+          </Link>
+        </p>
+      </div>
     </div>
   );
 }
+
+export default Register;

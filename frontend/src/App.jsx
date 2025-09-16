@@ -11,14 +11,16 @@ function App() {
 
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={token ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={token ? <Dashboard /> : <Navigate to="/login" />} />
-        <Route path="/rewards" element={token ? <Rewards /> : <Navigate to="/login" />} />
-      </Routes>
+      {token && <Navbar />}
+      <div className="min-h-screen bg-gray-100">
+        <Routes>
+          <Route path="/" element={token ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={token ? <Dashboard /> : <Navigate to="/login" />} />
+          <Route path="/rewards" element={token ? <Rewards /> : <Navigate to="/login" />} />
+        </Routes>
+      </div>
     </Router>
   );
 }
