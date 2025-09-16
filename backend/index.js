@@ -101,11 +101,15 @@ app.get('/api/dashboard/:id', authenticateToken, (req, res) => {
   if (req.user.id !== id) return res.status(403).json({ error: 'Forbidden: token does not match user id' });
 
   db.query('SELECT id, name, email, points, created_at FROM users WHERE id = ?', [id], (err, results) => {
-    if (err) return res.status(500).json({ error: 'DB error' });
+    if (err) {
+      console.error("MySQL Error:", err); // log the actual error to your terminal
+      return res.status(500).json({ error: err.sqlMessage || 'DB error' }); // return useful details
+    }
     if (results.length === 0) return res.status(404).json({ error: 'User not found' });
     res.json(results[0]);
   });
 });
+
 
 // Log activity (uses token; body { type })
 app.post('/api/activity', authenticateToken, (req, res) => {
