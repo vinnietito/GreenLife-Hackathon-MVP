@@ -1,73 +1,79 @@
 import React, { useState } from "react";
 import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-function Register() {
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+export default function Register({ setToken }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
   const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
-    setSuccess("");
     try {
-      const res = await axios.post("http://localhost:5000/api/register", formData);
-      if (res.data.message) {
-        setSuccess("Registration successful! Please login.");
-        setTimeout(() => navigate("/login"), 1500);
-      } else {
-        setError("Registration failed.");
-      }
+      const res = await axios.post("http://localhost:5000/api/register", {
+        email,
+        password,
+        name
+      });
+      localStorage.setItem("token", res.data.token);
+      setToken(res.data.token);
+      navigate("/dashboard");
     } catch (err) {
-      setError("Registration failed. Please try again.");
+      console.error(err);
+      setError(err.response?.data?.message || "Registration failed!");
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-md">
-        <h1 className="text-3xl font-bold text-green-700 mb-6 text-center">Register</h1>
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-        {success && <p className="text-green-600 text-center mb-4">{success}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            onChange={handleChange}
-            required
-            className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
-          <button
-            type="submit"
-            className="w-full bg-green-700 text-white py-2 rounded-lg hover:bg-green-800 transition"
-          >
-            Register
-          </button>
-        </form>
-        <p className="mt-4 text-sm text-center text-gray-600">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white p-8 rounded-lg shadow-md w-full max-w-md"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center">Register</h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <input
+          type="text"
+          placeholder="Full Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full p-3 mb-4 border rounded"
+          required
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="w-full p-3 mb-4 border rounded"
+          required
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="w-full p-3 mb-6 border rounded"
+          required
+        />
+        <button
+          type="submit"
+          className="w-full bg-green-500 text-white p-3 rounded hover:bg-green-600 transition"
+        >
+          Register
+        </button>
+        <p className="mt-4 text-center">
           Already have an account?{" "}
-          <Link to="/login" className="text-green-600 hover:underline">
+          <span
+            onClick={() => navigate("/login")}
+            className="text-blue-500 cursor-pointer"
+          >
             Login
-          </Link>
+          </span>
         </p>
-      </div>
+      </form>
     </div>
   );
 }
-
-export default Register;
