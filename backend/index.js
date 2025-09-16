@@ -34,6 +34,11 @@ db.query(`
 app.post("/api/register", (req, res) => {
     const { name, email, password } = req.body;
     db.query(
-        
-    )
-})
+        "INSERT INTO users (name, email, password) VALUES (?, ?, ?)",
+        [name, email, password],
+        (err) => {
+            if (err) return res.status(500).json({ error: err });
+            res.json({ message: "Registered"});
+        }
+    );
+});
