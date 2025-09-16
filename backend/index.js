@@ -42,3 +42,17 @@ app.post("/api/register", (req, res) => {
         }
     );
 });
+
+//Login
+app.post("/api/login", (req, res) => {
+    const { email, password } = req.body;
+    db.query(
+        "SELECT * FROM users WHERE email=? AND password=?",
+        [email, password],
+        (err, results) => {
+            if (err) return res.status(500).json({ error: err});
+            if (results.length === 0) return res.status(401).json({ message: "Invalid credentials" })
+            res.json(results[0 ]);
+        }
+    );
+});
